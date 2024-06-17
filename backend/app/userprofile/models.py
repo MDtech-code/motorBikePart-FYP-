@@ -4,7 +4,6 @@ from django.utils import timezone
 
 class CustomUser(AbstractUser):
     email_verified=models.BooleanField(default=False)
-   
     token_created_at = models.DateTimeField(null=True, blank=True)
     token_expiry_time = models.DateTimeField(null=True, blank=True)
 
