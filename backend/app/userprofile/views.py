@@ -14,13 +14,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, permissions
 
 #! JWT for token generation and handling
 import jwt
 
 #! Application-specific modules
 from .models import CustomUser
-from .serializers import CustomUserSerializers, LoginSerializers
+from .serializers import CustomUserSerializers, LoginSerializers,UserProfileSerializer
 from app.userprofile.utils.generate_Token import generate_verification_token
 from app.userprofile.utils.form_validation import validation_email, validation_password
 
@@ -269,3 +271,13 @@ class LogoutViews(APIView):
         #! Return a success response with a message and HTTP 200 status code.
         return Response({'Response': 'Logout successful'}, status=status.HTTP_200_OK)
 
+
+
+
+
+
+class UserProfileUpdateView(generics.UpdateAPIView):
+    serializer_class=UserProfileSerializer
+    permission_classes=[permissions.IsAuthenticated]
+    def get_object(self):
+        return self.request.user

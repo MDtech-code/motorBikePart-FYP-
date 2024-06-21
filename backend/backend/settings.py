@@ -27,6 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY=os.getenv('SECRET_KEY')
 if SECRET_KEY is None:
     raise ValueError("SECRET_KEY not found in .env file")
+
+
 #! SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -43,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app.userprofile.apps.UserprofileConfig',
-     'rest_framework',
+    'app.product.apps.ProductConfig',
+    'rest_framework',
   
 ]
 
@@ -78,7 +81,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-# Database
+#! Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
@@ -131,6 +134,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+ #! Base directory for storing media files
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+#! URL for accessing media files
+MEDIA_URL= '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

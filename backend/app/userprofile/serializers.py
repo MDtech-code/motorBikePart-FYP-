@@ -18,6 +18,7 @@ from django.core.mail import send_mail
 #! Form validation utilities to ensure usernames, emails, and passwords meet the project's criteria.
 from app.userprofile.utils.form_validation import validation_username,validation_email,validation_password
 
+
 class CustomUserSerializers(serializers.ModelSerializer):
     #! Meta class holds configuration for the serializer
     class Meta:
@@ -134,6 +135,12 @@ class LoginSerializers(serializers.Serializer):
             raise serializers.ValidationError('Invalid credentials')
 
 
+        
+        
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=CustomUser
+        fields=['id','username','email','gender','age','number','address','image']
         
 
         
