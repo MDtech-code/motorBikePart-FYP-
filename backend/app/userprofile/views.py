@@ -14,9 +14,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import generics, permissions
-
 #! JWT for token generation and handling
 import jwt
 
@@ -30,6 +29,7 @@ from app.userprofile.utils.form_validation import validation_email, validation_p
 import datetime
 
 class CsrfTokenViews(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         #! Retrieves a CSRF token for the given request
         csrfToken = get_token(request) 
@@ -40,7 +40,7 @@ class CsrfTokenViews(APIView):
 
 #! SignupViews is a class-based view that handles user registration.
 class SignupViews(APIView):
-    #! The post method responds to HTTP POST requests.
+    permission_classes = [AllowAny]  #! The post method responds to HTTP POST requests.
     def post(self, request):
         #! request.data contains the data sent in the POST request.
         data = request.data
@@ -63,7 +63,7 @@ class SignupViews(APIView):
 
 #! Define a view to handle send email verification link
 class SendEmailVerificationView(APIView):
-    #! Define the POST method, as this view will be used to send a verification email
+    permission_classes = [IsAuthenticated] #! Define the POST method, as this view will be used to send a verification email
     def post(self, request):
         #! Retrieve the current user from the request
         user = request.user
@@ -101,6 +101,7 @@ class SendEmailVerificationView(APIView):
 
 #! define a view to handle the email verifcation
 class EmailVerifyViews(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         #! Retrieve the token from the query parameters of the request URL
         token = request.query_params.get('token')
@@ -143,6 +144,7 @@ class EmailVerifyViews(APIView):
         
 #! LoginViews is a class-based view that handles user login.
 class LoginViews(APIView):
+    permission_classes = [AllowAny]
     #! The post method responds to HTTP POST requests.
     def post(self, request):
         #! request.data contains the data sent in the POST request.
@@ -177,6 +179,7 @@ class LoginViews(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ForgetPasswordViews(APIView):
+    permission_classes = [IsAuthenticated]
     #! POST method to handle the password reset request
     def post(self, request, *args, **kwargs):
         #! Retrieve the email from the request data
@@ -219,6 +222,7 @@ class ForgetPasswordViews(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class ResetPasswordView(APIView):
     #! POST method to handle the password reset confirmation
+    permission_classes = [IsAuthenticated] 
     def post(self, request):
         #! Retrieve the data from the request
         data = request.data
@@ -264,6 +268,7 @@ class ResetPasswordView(APIView):
 #! LogoutViews is a class-based view that handles user logout.
 class LogoutViews(APIView):
     #! The post method responds to HTTP POST requests.
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         #! logout() is a Django function that logs the user out, removing the user's ID from the session.
         logout(request)
@@ -275,9 +280,9 @@ class LogoutViews(APIView):
 
 
 
+class UserProfileUpdateView(APIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
 
-class UserProfileUpdateView(generics.UpdateAPIView):
-    serializer_class=UserProfileSerializer
-    permission_classes=[permissions.IsAuthenticated]
     def get_object(self):
         return self.request.user

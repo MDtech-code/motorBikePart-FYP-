@@ -7,6 +7,7 @@ from .serializers import ProductSerializer,ProductDetailSerializer,CartSerialize
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class ProductViews(APIView):
@@ -20,22 +21,22 @@ class ProductViews(APIView):
     
 class ProductDetailViews(APIView):
     def get(self,request,pk):
-        product_detail=get_object_or_404(Product,pk)
+        product_detail=get_object_or_404(Product,pk=pk)
         serializer=ProductDetailSerializer(product_detail)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 
-class CartDetailView(APIView):
+class CartItemListView(APIView):
+    permission_classes = [IsAuthenticated]
     @method_decorator(login_required)
     def get(self, request):
-        try:
-            cart = Cart.objects.get(user=request.user)
-            serializer = CartSerializer(cart)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Cart.DoesNotExist:
-            return Response({'message': 'Cart does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        cart_items = CartItem.objects.filter(cart__user=request.user)
+        serializer = CartItemSerializer(cart_items, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class AddToCartView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         # Deserialize request data to create a new CartItem
         serializer = CartItemSerializer(data=request.data)
@@ -57,6 +58,7 @@ class AddToCartView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UpdateCartItemView(APIView):
+    permission_classes = [IsAuthenticated]
     @method_decorator(login_required)
     def put(self, request, pk):
         cart_item = get_object_or_404(CartItem, pk=pk)
@@ -70,6 +72,7 @@ class UpdateCartItemView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RemoveFromCartView(APIView):
+    permission_classes = [IsAuthenticated]
     @method_decorator(login_required)
     def delete(self, request, pk):
         cart_item = get_object_or_404(CartItem, pk=pk)
