@@ -35,6 +35,18 @@ class CsrfTokenViews(APIView):
         csrfToken = get_token(request) 
         #! Returns the CSRF token in the response
         return Response({'csrfToken': csrfToken})
+'''
+#! this view help to send csrf token to frontend
+@api_view(['GET'])
+def csrf_token_views(request):
+    try:
+        csrf_token = get_token(request)
+        response=Response({'csrfToken': csrf_token})
+        response.set_cookie('csrftoken',csrf_token,max_age=31449600,secure=True,httponly=True,samesite='None')
+        return response
+    except Exception as e:
+        return Response({'responseErrorMessage': str(e)}, status=500)
+'''
 
     
 
@@ -63,7 +75,7 @@ class SignupViews(APIView):
 
 #! Define a view to handle send email verification link
 class SendEmailVerificationView(APIView):
-    permission_classes = [IsAuthenticated] #! Define the POST method, as this view will be used to send a verification email
+    #permission_classes = [IsAuthenticated] #! Define the POST method, as this view will be used to send a verification email
     def post(self, request):
         #! Retrieve the current user from the request
         user = request.user
